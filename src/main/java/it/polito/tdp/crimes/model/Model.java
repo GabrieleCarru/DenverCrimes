@@ -17,6 +17,7 @@ public class Model {
 	private List<Event> events;
 	private Graph<String, DefaultWeightedEdge> graph;
 	private List<Adiacenza> adiacenze;
+	private List<String> best;
 	
 	public Model() {
 		dao = new EventsDao();
@@ -54,12 +55,8 @@ public class Model {
 			
 			if(this.graph.getEdge(a.getS1(), a.getS2()) == null) {
 				Graphs.addEdgeWithVertices(this.graph, a.getS1(), a.getS2(), a.getPeso());
-			}
-			
+			}	
 		}
-
-		
-		
 	}
 	
 	public List<Adiacenza> getAdiacenzeBiggerThanAVG() {
@@ -98,7 +95,39 @@ public class Model {
 		return this.graph.edgeSet().size();
 	}
 	
-	
+	public List<String> trovaPercorso(String partenza, String arrivo) {
+		List<String> parziale = new ArrayList<>();
+		this.best = new ArrayList<>();
+		parziale.add(partenza);
+		trovaRiscorsivo(arrivo, parziale, 0);
+		return this.best;
+	}
+
+	private void trovaRiscorsivo(String arrivo, List<String> parziale, int i) {
+		
+		// Condizione di terminazione: -> l'ultimo vertice inserito in paziale è uguale ad 'arrivo'
+		if(parziale.get(parziale.size()-1).equals(arrivo)) {
+			if(parziale.size() > this.best.size()) {
+				this.best = new ArrayList<>(parziale);
+			}
+			return;
+		}
+		
+		// Scorro i vicini dell'ultimo vertice inserito in parziale
+		for(String vicino : Graphs.neighborListOf(this.graph, parziale.get(parziale.size()-1))) {
+			// cerchiamo cammini aciclici -> controllo che il vertice non sia già in parziale
+			if(!parziale.contains(vicino)) {
+				// provo ad aggiungere
+				parziale.add(vicino);
+				// continuo la ricorsione
+				this.trovaRiscorsivo(arrivo, parziale, i+1);
+				// faccio backtracking
+				parziale.remove(parziale.size()-1);
+			}
+		}
+		
+		
+	}
 	
 	
 }

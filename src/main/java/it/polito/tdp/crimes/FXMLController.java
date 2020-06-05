@@ -36,7 +36,7 @@ public class FXMLController {
     private Button btnAnalisi; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxArco"
-    private ComboBox<?> boxArco; // Value injected by FXMLLoader
+    private ComboBox<Adiacenza> boxArco; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnPercorso"
     private Button btnPercorso; // Value injected by FXMLLoader
@@ -46,7 +46,20 @@ public class FXMLController {
 
     @FXML
     void doCalcolaPercorso(ActionEvent event) {
-
+    	txtResult.clear();
+    	
+    	Adiacenza a = this.boxArco.getValue();
+    	if(a == null) {
+    		txtResult.appendText("Inserire un arco. \n");
+    		return;
+    	}
+    	
+    	List<String> percorso = this.model.trovaPercorso(a.getS1(), a.getS2());
+    	txtResult.appendText("Percorso massimo: \n");
+    	for(String s : percorso) {
+    		txtResult.appendText(s + "\n");
+    	}
+    	
     }
 
     @FXML
@@ -74,6 +87,9 @@ public class FXMLController {
     	txtResult.appendText("Gli archi con peso superiore al peso medio del grafo sono: \n");
     	
     	List<Adiacenza> adiacenzeMedia = this.model.getAdiacenzeBiggerThanAVG();
+    	
+    	boxArco.getItems().addAll(adiacenzeMedia);
+    	
     	for(Adiacenza a : adiacenzeMedia) {
     		txtResult.appendText(a.toString() + "\n");
     	}
