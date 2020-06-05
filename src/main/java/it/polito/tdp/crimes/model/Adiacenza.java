@@ -31,9 +31,10 @@ public class Adiacenza {
 	public double getPeso() {
 		return peso;
 	}
-	public void setPeso(int peso) {
+	public void setPeso(double peso) {
 		this.peso = peso;
 	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -42,6 +43,7 @@ public class Adiacenza {
 		result = prime * result + ((s2 == null) ? 0 : s2.hashCode());
 		return result;
 	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -63,6 +65,7 @@ public class Adiacenza {
 			return false;
 		return true;
 	}
+	
 	@Override
 	public String toString() {
 		return s1 + " - " + s2 + " ---> " + peso;

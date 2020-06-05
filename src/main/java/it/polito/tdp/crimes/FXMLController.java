@@ -54,17 +54,19 @@ public class FXMLController {
     	
     	txtResult.clear();
     	
-    	String category = boxCategoria.getValue();
     	Integer month = boxMese.getValue();
+    	String category = boxCategoria.getValue();
     	
     	this.model.creaGrafo(category, month);
+    	txtResult.appendText("Sto creando il grafo...\n");
+    	txtResult.appendText(String.format("Grafo creato! #Vertici %d #Archi %d \n", 
+    									this.model.numberVertex(), 
+    									this.model.numberEdge()));
     	
-    	txtResult.appendText(String.format("Grafo creato! #Vertici %d #Archi %d", 
-    							this.model.numberVertex(), 
-    							this.model.numberEdge()));
+    	txtResult.appendText("Gli archi con peso superiore al peso medio del grafo sono: \n");
     	
-    	List<Adiacenza> adiacenze = this.model.getAdiacenzeBiggerThanAVG();
-    	for(Adiacenza a : adiacenze) {
+    	List<Adiacenza> adiacenzeMedia = this.model.getAdiacenzeBiggerThanAVG();
+    	for(Adiacenza a : adiacenzeMedia) {
     		txtResult.appendText(a.toString() + "\n");
     	}
     	
