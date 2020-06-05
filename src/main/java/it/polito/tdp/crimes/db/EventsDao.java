@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.polito.tdp.crimes.model.Adiacenza;
 import it.polito.tdp.crimes.model.Event;
 
 
@@ -108,18 +109,19 @@ public class EventsDao {
 		
 	}
 
-	public double getPesoFromTwoVertex(String category, String s1, String s2, Integer month) {
-		String sql = "select count(distinct(e1.neighborhood_id)) as numQuartieri " + 
+	public List<Adiacenza> getPesoFromTwoVertex(String category, Integer month) {
+		String sql = "select e1.offense_type_id as s1, e2.offense_type_id as s2, " +
+				"count(distinct(e1.neighborhood_id)) as numQuartieri " + 
 				"from events as e1, events as e2 " + 
 				"where e1.offense_category_id = ? " + 
 				"and e2.offense_category_id = ? " + 
 				"and Month(e1.reported_date) = ? " + 
 				"and Month(e2.reported_date) = ? " + 
-				"and e1.offense_type_id = ? " + 
-				"and e2.offense_type_id = ? " + 
-				"and e1.neighborhood_id = e2.neighborhood_id";
+				"and e1.offense_type_id <> e2.offense_type_id " + 
+				"and e1.neighborhood_id = e2.neighborhood_id " +
+				"group by e1.offense_type_id, e2.offense_type_id";
 		
-		double result = 0.0;
+		List<Adiacenza> result = new ArrayList<>();
 		
 		try {
 			Connection conn = DBConnect.getConnection();
@@ -128,40 +130,12 @@ public class EventsDao {
 			st.setString(2, category);
 			st.setInt(3, month);
 			st.setInt(4, month);
-			st.setString(5, s1);
-			st.setString(6, s2);
 			ResultSet rs = st.executeQuery();
 			
 			while(rs.next()) {
-				result = rs.getDouble("numQuartieri");
-			}
-			
-			conn.close();
-			return result;
-			
-		} catch(SQLException e) {
-			e.printStackTrace();
-			return 0.0;
-		}
-	}
-
-	public List<String> getVertexList(String category, Integer month) {
-		String sql = "select distinct(offense_type_id) as types " + 
-				"from events " + 
-				"where offense_category_id = ? " + 
-				"and Month(reported_date) = ? ";
-		
-		List<String> result = new ArrayList<>();
-		
-		try {
-			Connection conn = DBConnect.getConnection();
-			PreparedStatement st = conn.prepareStatement(sql);
-			st.setString(1, category);
-			st.setInt(2, month);
-			ResultSet rs = st.executeQuery();
-			
-			while(rs.next()) {
-				result.add(rs.getString("types"));
+				Adiacenza a = new Adiacenza(rs.getString("s1"), rs.getString("s2"), 
+													rs.getDouble("numQuartieri"));
+				result.add(a);
 			}
 			
 			conn.close();
@@ -171,9 +145,5 @@ public class EventsDao {
 			e.printStackTrace();
 			return null;
 		}
-	}
-	
-	
-
-	
+	}	
 }

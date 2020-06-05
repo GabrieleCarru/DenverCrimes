@@ -55,7 +55,15 @@ public class FXMLController {
     	txtResult.clear();
     	
     	Integer month = boxMese.getValue();
+    	if(month == null) {
+    		txtResult.appendText("Seleziona un mese.");
+    		return;
+    	}
     	String category = boxCategoria.getValue();
+    	if(category == null) {
+    		txtResult.appendText("Seleziona una categoria.");
+    		return;
+    	}
     	
     	this.model.creaGrafo(category, month);
     	txtResult.appendText("Sto creando il grafo...\n");

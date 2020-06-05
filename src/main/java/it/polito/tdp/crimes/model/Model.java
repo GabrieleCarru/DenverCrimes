@@ -41,24 +41,25 @@ public class Model {
 	
 	public void creaGrafo(String category, Integer month) {
 		graph = new SimpleWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
-		adiacenze = new ArrayList<>();
-		
+		adiacenze = dao.getPesoFromTwoVertex(category, month);
+			
 		// Aggiungo i vertici 
-		List<String> vertexList = dao.getVertexList(category, month);
-		Graphs.addAllVertices(graph, vertexList);
-		
-		//Aggiungo gli archi
-		for(String s1 : vertexList) {
-			for(String s2 : vertexList) {
-				if((!graph.containsEdge(s1, s2)) && (s1.compareTo(s2) != 0)) {
-					double peso = dao.getPesoFromTwoVertex(category, s1, s2, month);
-					if(peso != 0.0) {
-						adiacenze.add(new Adiacenza(s1, s2, peso));
-						Graphs.addEdge(graph, s1, s2, peso);
-					}
-				}
+		for(Adiacenza a : adiacenze) {
+			if(!this.graph.containsVertex(a.getS1())) {
+				this.graph.addVertex(a.getS1());
 			}
+			if(!this.graph.containsVertex(a.getS2())) {
+				this.graph.addVertex(a.getS2());
+			}
+			
+			if(this.graph.getEdge(a.getS1(), a.getS2()) == null) {
+				Graphs.addEdgeWithVertices(this.graph, a.getS1(), a.getS2(), a.getPeso());
+			}
+			
 		}
+
+		
+		
 	}
 	
 	public List<Adiacenza> getAdiacenzeBiggerThanAVG() {
